@@ -1,5 +1,6 @@
 package contacts
 
 fun main() {
-    println("Hello World!")
+    val contactInterface = ContactInterface()
+    contactInterface.process()
 }
