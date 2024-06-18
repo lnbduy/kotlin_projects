@@ -1,0 +1,235 @@
+type: edu
+files:
+  - name: src/bullscows/Main.kt
+    visible: true
+    text: |-
+      package bullscows
+      
+      fun main() {
+          println("Hello World!")
+      }
+    learner_created: false
+  - name: test/BullsCowsTest.java
+    visible: false
+    text: |-
+      import org.hyperskill.hstest.dynamic.input.DynamicTestingMethod;
+      import org.hyperskill.hstest.stage.StageTest;
+      import org.hyperskill.hstest.testcase.CheckResult;
+      import org.hyperskill.hstest.testing.TestedProgram;
+      
+      import java.util.ArrayList;
+      import java.util.Arrays;
+      import java.util.LinkedHashSet;
+      import java.util.List;
+      import java.util.stream.Collectors;
+      
+      import static org.hyperskill.hstest.testing.expect.Expectation.expect;
+      
+      public class BullsCowsTest extends StageTest<String> {
+      
+          // basic test case
+          @DynamicTestingMethod
+          CheckResult test1() {
+              TestedProgram main = new TestedProgram();
+              main.start();
+              String output = main.execute("4").toLowerCase().trim();
+      
+              return outputCheck(output, 4);
+          }
+      
+          @DynamicTestingMethod
+          CheckResult test2() {
+              TestedProgram main = new TestedProgram();
+              main.start();
+              String output = main.execute("1").toLowerCase().trim();
+      
+              return outputCheck(output, 1);
+          }
+      
+          // test of incorrect input
+          @DynamicTestingMethod
+          CheckResult test4() {
+              TestedProgram main = new TestedProgram();
+              main.start();
+              String output = main.execute("11").toLowerCase().trim();
+      
+              return outputCheck(output, 11);
+          }
+      
+          @DynamicTestingMethod
+          CheckResult test5() {
+              TestedProgram main = new TestedProgram();
+              main.start();
+              String output = main.execute("6").toLowerCase().trim();
+      
+              return outputCheck(output, 6);
+          }
+      
+          @DynamicTestingMethod
+          CheckResult test6() {
+              TestedProgram main = new TestedProgram();
+              main.start();
+              String output = main.execute("3").toLowerCase().trim();
+      
+              return outputCheck(output, 3);
+          }
+      
+      
+          CheckResult outputCheck(String source, int length) {
+      
+              if (length > 10) {
+                  if (source.toLowerCase().contains("error")) {
+                      return CheckResult.correct();
+                  } else {
+                      return CheckResult.wrong("An error message expected with input " +
+                              "\"" + length + "\"");
+                  }
+              }
+      
+              List<Integer> integers = expect(source).toContain(1).integers();
+              source = "" + integers.get(0);
+      
+              if (source.length() != length) {
+                  return CheckResult.wrong("The output number of your program has " +
+                          "an incorrect length (found " + source.length() + ")");
+              }
+      
+              List<Integer> temp = stringToArrayOfNumbers(source);
+              temp = new ArrayList<>(new LinkedHashSet<>(temp));
+      
+              if (temp.toArray().length != source.length()) {
+                  return CheckResult.wrong("Digits in the generated number are not unique.");
+              }
+      
+              return CheckResult.correct();
+          }
+      
+          private static List<Integer> stringToArrayOfNumbers(String array) {
+              return Arrays.stream(array.split(""))
+                      .map(Integer::parseInt)
+                      .collect(Collectors.toList());
+          }
+      }
+    learner_created: false
+  - name: src/bullscows/BullAndCow.kt
+    visible: true
+    text: |-
+      package bullscows
+      
+      import kotlin.random.Random
+      
+      class BullAndCow {
+          private val numsAndPositions: MutableMap<Int, Int> = mutableMapOf()
+          private var correctGuest = false
+          private var secretCode: String = ""
+          private var turn = 1;
+          private fun generateSecretCode() {
+              var order = 1;
+              val stringBuilder = StringBuilder()
+              while (order <=4) {
+                  var ranNum: Int
+                  do {
+                      ranNum = Random.nextInt(0, 9)
+                  } while (numsAndPositions.containsKey(ranNum))
+                  numsAndPositions[ranNum] = order
+                  stringBuilder.append(ranNum)
+                  order++
+              }
+              secretCode = stringBuilder.toString()
+          }
+      
+          fun generateSecretCode(length: Int): String {
+              if (length > 10) {
+                  println("Error: can't generate a secret number with a length of $length because there aren't enough unique digits.")
+                  return ""
+              }
+      
+              val uniqueDigits = mutableSetOf<Int>()
+              while (uniqueDigits.size < length) {
+                  val pseudoRandomNumber = System.nanoTime().toString()
+                  for (digit in pseudoRandomNumber.reversed()) {
+                      if (digit.isDigit()) {
+                          uniqueDigits.add(digit.digitToInt())
+                      }
+                      if (uniqueDigits.size == length) {
+                          break
+                      }
+                  }
+              }
+      
+              return uniqueDigits.take(length).joinToString("")
+          }
+      
+          fun play() {
+              generateSecretCode()
+              println("The secret code is prepared: ****.\n")
+              while(!correctGuest) {
+                  val answer = getPlayerAnswer()
+                  println("${evaluateAnswer(answer)} \n")
+              }
+          }
+      
+          fun playTemp() {
+              generateSecretCode()
+              val input = readln()
+              print(evaluateAnswer(input))
+              print(" The secret code is $secretCode.")
+      //        while(!correctGuest) {
+      //            val answer = getPlayerAnswer()
+      //            println("${evaluateAnswer(answer)} \n")
+      //        }
+          }
+      
+          private fun getPlayerAnswer(): String {
+              println("Turn $turn. Answer:")
+              turn++
+              return readln()
+          }
+      
+          private fun evaluateAnswer(answer: String): String {
+              var countBulls = 0
+              var countCows = 0
+              for (i in answer.indices) {
+                  val currentValue = answer[i].toString().toIntOrNull() ?: return "Invalid answer"
+                  if (numsAndPositions.containsKey(currentValue)) {
+                      if (numsAndPositions[currentValue] == i+1) {
+                          countBulls ++
+                      } else {
+                          countCows++
+                      }
+                  }
+              }
+      
+              return populateEvaluation(countBulls, countCows)
+          }
+      
+          private fun populateEvaluation(countBull: Int, countCow: Int): String {
+              if (countBull == 0 && countCow == 0) return "Grade: None."
+              val bullStr = populateString(countBull, "bull")
+              val cowStr = populateString(countCow, "cow")
+              val result = StringBuilder("Grade: ")
+              if (bullStr.isNotEmpty()) result.append(bullStr)
+              if (cowStr.isNotEmpty()) {
+                  if (bullStr.isNotEmpty()) result.append(" and ")
+                  result.append(cowStr)
+              }
+              if (countBull == 4) {
+                  result.append("\nCongrats! The secret code is $secretCode.")
+              }
+              result.append(".")
+              correctGuest = countBull == 4
+              return result.toString()
+          }
+      
+          private fun populateString(count: Int, type: String): String {
+              return if (count == 0) "" else if (count == 1) "$count $type" else "$count ${type}(s)"
+          }
+      
+      }
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/30278#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Tue, 18 Jun 2024 05:03:23 UTC"
+record: 3
