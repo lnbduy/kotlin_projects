@@ -1,0 +1,53 @@
+type: edu
+files:
+  - name: src/engine/WebQuizEngine.kt
+    visible: true
+    learner_created: false
+  - name: src/resources/application.properties
+    visible: true
+    learner_created: false
+  - name: build.gradle
+    visible: true
+    learner_created: false
+  - name: test/WebQuizEngineTest.java
+    visible: false
+    learner_created: false
+  - name: src/engine/rest/CreateQuizDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/QuizNotFoundException.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/rest/QuizController.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/model/QuizFeedback.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/QuizService.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/model/Quiz.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/rest/GlobalExceptionHandler.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/rest/AnswerDTO.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/model/Answer.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/model/QuizOption.kt
+    visible: true
+    learner_created: true
+  - name: src/engine/domain/repository/QuizRepository.kt
+    visible: true
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/24907#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sat, 16 Nov 2024 15:42:24 UTC"
+record: 3
